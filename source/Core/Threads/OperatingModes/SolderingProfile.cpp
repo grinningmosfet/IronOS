@@ -114,15 +114,15 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
 
   // determine current target temp
   if (cxt->scratch_state.state6 < cxt->scratch_state.state5) {
-      profileCurrentTargetTemp = cxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-      if (profileCurrentTargetTemp >= cxt->scratch_state.state5) {
-        profileCurrentTargetTemp = cxt->scratch_state.state5;
-      }
+    profileCurrentTargetTemp = cxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
+    if (profileCurrentTargetTemp >= cxt->scratch_state.state5) {
+      profileCurrentTargetTemp = cxt->scratch_state.state5;
+    }
   } else {
-      profileCurrentTargetTemp = cxt->scratch_state.state6 - ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-      if (profileCurrentTargetTemp <= cxt->scratch_state.state5) {
-        profileCurrentTargetTemp = cxt->scratch_state.state5;
-      }
+    profileCurrentTargetTemp = cxt->scratch_state.state6 - ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
+    if (profileCurrentTargetTemp <= cxt->scratch_state.state5) {
+      profileCurrentTargetTemp = cxt->scratch_state.state5;
+    }
   }
 
   // Draw in the screen details
