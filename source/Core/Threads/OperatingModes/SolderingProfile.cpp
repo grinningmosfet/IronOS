@@ -44,10 +44,10 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
   }
 
   // if start temp is unknown (preheat), we're setting it now
-  if (cxt->scratch_state.state6 == 0) {
+  if (cxt->scratch_state.state1 == 0) {
     cxt->scratch_state.state6 = tipTemp;
     // if this is hotter than the preheat temperature, we should fail
-    if (cxt->scratch_state.state6 >= 55) {
+    if (cxt->scratch_state.state6 >= cxt->scratch_state.state5) {
       warnUser(translatedString(Tr->TooHotToStartProfileWarning), buttons);
       return OperatingMode::HomeScreen;
     }
