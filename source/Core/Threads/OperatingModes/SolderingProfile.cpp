@@ -56,7 +56,7 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
   uint16_t phaseElapsedSeconds = (xTaskGetTickCount() - cxt->scratch_state.state3) / TICKS_SECOND;
 
   // have we finished this phase?
-  if (phaseElapsedSeconds >= cxt->scratch_state.state2 && tipTemp >= cxt->scratch_state.state5) {
+  if (phaseElapsedSeconds >= cxt->scratch_state.state2 && tipTemp >= cxt->scratch_state.state5 - 2 && tipTemp <= cxt->scratch_state.state5 + 2) {
     cxt->scratch_state.state1++;
     cxt->scratch_state.state6 = cxt->scratch_state.state5;
     cxt->scratch_state.state3 = xTaskGetTickCount();
@@ -114,13 +114,15 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
 
   // determine current target temp
   if (cxt->scratch_state.state6 < cxt->scratch_state.state5) {
-    if (profileCurrentTargetTemp < cxt->scratch_state.state5) {
-      profileCurrentTargetTemp = cxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-    }
+      profileCurrentTargetTemp = maxcxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
+      if (profileCurrentTargetTemp >= scratch_state.state5) {
+        profileCurrentTargetTemp = scratch_state.state5;
+      }
   } else {
-    if (profileCurrentTargetTemp > cxt->scratch_state.state5) {
       profileCurrentTargetTemp = cxt->scratch_state.state6 - ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-    }
+      if (profileCurrentTargetTemp <= scratch_state.state5) {
+        profileCurrentTargetTemp = scratch_state.state5;
+      }
   }
 
   // Draw in the screen details
