@@ -17,7 +17,7 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
     cxt->scratch_state.state5 = getSettingValue(SettingsOptions::ProfilePreheatTemp);
   }
   uint16_t phaseTicksPerDegree      = TICKS_SECOND / getSettingValue(SettingsOptions::ProfilePreheatSpeed);
-  uint16_t cxt->scratch_state.state7 = 0;
+  cxt->scratch_state.state7 = 0;
 
   switch (buttons) {
   case BUTTON_BOTH:
