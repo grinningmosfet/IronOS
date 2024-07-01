@@ -17,7 +17,7 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
     cxt->scratch_state.state5 = getSettingValue(SettingsOptions::ProfilePreheatTemp);
   }
   uint16_t phaseTicksPerDegree      = TICKS_SECOND / getSettingValue(SettingsOptions::ProfilePreheatSpeed);
-  uint16_t profileCurrentTargetTemp = 0;
+  uint16_t cxt->scratch_state.state7 = 0;
 
   switch (buttons) {
   case BUTTON_BOTH:
@@ -114,14 +114,12 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
 
   // determine current target temp
   if (cxt->scratch_state.state6 < cxt->scratch_state.state5) {
-    profileCurrentTargetTemp = cxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-    if (profileCurrentTargetTemp >= cxt->scratch_state.state5) {
-      profileCurrentTargetTemp = cxt->scratch_state.state5;
+    if (cxt->scratch_state.state7 < cxt->scratch_state.state5) {
+      cxt->scratch_state.state7 = cxt->scratch_state.state6 + ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
     }
   } else {
-    profileCurrentTargetTemp = cxt->scratch_state.state6 - ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
-    if (profileCurrentTargetTemp <= cxt->scratch_state.state5) {
-      profileCurrentTargetTemp = cxt->scratch_state.state5;
+    if (cxt->scratch_state.state7 > cxt->scratch_state.state5) {
+      cxt->scratch_state.state7 = cxt->scratch_state.state6 - ((xTaskGetTickCount() - cxt->viewEnterTime) / phaseTicksPerDegree);
     }
   }
 
@@ -136,7 +134,7 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
 
     OLED::printNumber(tipTemp, 3, FontStyle::SMALL);
     OLED::print(SmallSymbolSlash, FontStyle::SMALL);
-    OLED::printNumber(profileCurrentTargetTemp, 3, FontStyle::SMALL);
+    OLED::printNumber(cxt->scratch_state.state7, 3, FontStyle::SMALL);
 
     if (getSettingValue(SettingsOptions::TemperatureInF)) {
       OLED::print(SmallSymbolDegF, FontStyle::SMALL);
@@ -188,9 +186,9 @@ OperatingMode gui_solderingProfileMode(const ButtonState buttons, guiContext *cx
 
   // Update the setpoints for the temperature
   if (getSettingValue(SettingsOptions::TemperatureInF)) {
-    currentTempTargetDegC = TipThermoModel::convertFtoC(profileCurrentTargetTemp);
+    currentTempTargetDegC = TipThermoModel::convertFtoC(cxt->scratch_state.state7);
   } else {
-    currentTempTargetDegC = profileCurrentTargetTemp;
+    currentTempTargetDegC = cxt->scratch_state.state7;
   }
 
   if (checkExitSoldering() || (cxt->scratch_state.state4 != 0 && xTaskGetTickCount() >= cxt->scratch_state.state4)) {
